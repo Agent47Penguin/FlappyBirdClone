@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdio.h>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 450;
@@ -18,6 +19,8 @@ enum Level currentLevel = MENU;
 Vector2 cursorPosition = {340, 200};
 bool exitPressed = false;
 
+int frameCount = 0;
+int score = 0;
 Rectangle ground;
 Rectangle baseObstacle;
 Rectangle player;
@@ -79,13 +82,24 @@ void updateGame(float dt) {
     case GAME:
         // Player Input
         if (IsKeyPressed(KEY_SPACE)) {
-            player.y -= 75;
+            if (player.y > 76) {
+                player.y -= 75;
+            } else {
+                player.y = 0;
+            }
         }
         // Player Gravity
         if (!CheckCollisionRecs(player, ground)) {
             player.y += 150 * dt;
         } else {
             currentLevel = END;
+        }
+
+        // Update Timer
+        frameCount++;
+        if (frameCount >= 60) {
+            score++;
+            frameCount = 0;
         }
         break;
     case END:
@@ -121,6 +135,15 @@ void drawGame() {
 
         // Draw Ground
         DrawRectangleRec(ground, YELH);
+
+        // Draw Score
+        DrawRectangle(300, 0, 200, 50, YELH);
+        DrawText("Score: ", 325, 10, 24, PURK);
+
+        // Draw Score
+        char formattedScore[20];
+        sprintf(formattedScore, "%d", score);
+        DrawText(formattedScore, 410, 10, 24, PURK);
         break;
     case END:
         DrawText("This is the end screen", 0, 200, 24, YELH);
