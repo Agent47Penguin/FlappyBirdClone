@@ -25,11 +25,14 @@ bool exitPressed = false;
 int frameCount = 0;
 int score = 0;
 Rectangle ground;
+Rectangle preGround;
 Rectangle player;
+Rectangle prePlayer;
 
 #define MAX_OBSTACLE 4
 #define OBSTACLE_PIECES 2
 Rectangle obstacles[MAX_OBSTACLE][OBSTACLE_PIECES];
+Rectangle preObstacles[MAX_OBSTACLE][OBSTACLE_PIECES];
 int xIncrement = 240;
 
 void updateGame(float);
@@ -43,7 +46,9 @@ int main(void) {
 
     // Game Setup
     ground = (Rectangle){0, 400, 800, 100};
+    preGround = ground;
     player = (Rectangle){100, 150, 40, 40};
+    prePlayer = player;
 
     srand(time(NULL));
     int minHeight = 50;
@@ -53,7 +58,9 @@ int main(void) {
     for (int i = 0; i < MAX_OBSTACLE; i++) {
         int topHeight = (rand() % (maxHeight - minHeight + 1)) + minHeight;
         obstacles[i][0] = (Rectangle){startX, 0, 60, topHeight};
+        preObstacles[i][0] = obstacles[i][0];
         obstacles[i][1] = (Rectangle){startX, topHeight + player.height * 3 + 20, 60, 450};
+        preObstacles[i][1] = obstacles[i][1];
         startX += xIncrement;
     }
 
@@ -144,8 +151,16 @@ void updateGame(float dt) {
         }
         break;
     case END:
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_ENTER)) {
             currentLevel = GAME;
+            frameCount = 0;
+            score = 0;
+            ground = preGround;
+            player = prePlayer;
+            for (int i = 0; i < MAX_OBSTACLE; i++) {
+                obstacles[i][0] = preObstacles[i][0];
+                obstacles[i][1] = preObstacles[i][1];
+            }
         }
         break;
     }
@@ -214,7 +229,7 @@ void drawGame() {
         DrawText(formattedScore, midScreen - center, 125, fontSize * 2, YELH);
 
         center = MeasureText("PRESS SPACE TO REPLAY", fontSize) / 2;
-        DrawText("PRESS SPACE TO REPLAY", midScreen - center, 350, fontSize, YELH);
+        DrawText("PRESS ENTER TO REPLAY", midScreen - center, 350, fontSize, YELH);
 
         break;
     default:
