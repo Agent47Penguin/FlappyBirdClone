@@ -24,6 +24,7 @@ bool exitPressed = false;
 
 int frameCount = 0;
 int score = 0;
+int highScore = 0;
 Rectangle ground;
 Rectangle preGround;
 Rectangle player;
@@ -120,6 +121,8 @@ void updateGame(float dt) {
             player.y += 125 * dt;
         } else {
             currentLevel = END;
+            if (score > highScore)
+                highScore = score;
         }
 
         // Move Obstacles
@@ -139,6 +142,8 @@ void updateGame(float dt) {
             for (int j = 0; j < OBSTACLE_PIECES; j++) {
                 if (CheckCollisionRecs(player, obstacles[i][j])) {
                     currentLevel = END;
+                    if (score > highScore)
+                        highScore = score;
                 }
             }
         }
@@ -219,8 +224,11 @@ void drawGame() {
         center = MeasureText("flappy bird clone", fontSize) / 2;
         DrawText("flappy bird clone", midScreen - center, 25, fontSize, YELH);
 
-        center = MeasureText("HIGHSCORE: 0", fontSize * 2) / 2;
-        DrawText("HIGHSCORE: 0", midScreen - center, 75, fontSize * 2, YELH);
+        sprintf(formattedScore, "HIGHSCORE: "
+                                "%d",
+                highScore);
+        center = MeasureText(formattedScore, fontSize * 2) / 2;
+        DrawText(formattedScore, midScreen - center, 75, fontSize * 2, YELH);
 
         sprintf(formattedScore, "SCORE: "
                                 "%d",
