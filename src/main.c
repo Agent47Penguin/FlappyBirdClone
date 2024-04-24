@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include <iostream>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 450;
@@ -10,27 +9,19 @@ const int SCREEN_HEIGHT = 450;
     (Color) { 254, 194, 140, 255 }
 
 enum Level {
-    menu,
-    game,
-    end
+    MENU,
+    GAME,
+    END
 };
-Level currentLevel = Level::game;
+enum Level currentLevel = GAME;
 
-typedef struct {
-    Rectangle rect;
-    Texture2D texture;
-    bool collisionEnabled;
-    Color tint;
-} Sprite;
-
-Sprite ground;
-Sprite baseObstacle;
-Sprite player;
+Rectangle ground;
+Rectangle baseObstacle;
+Rectangle player;
 
 void loadAssets();
 void updateGame(float);
 void drawGame();
-void unloadAssets();
 
 int main(void) {
 
@@ -39,9 +30,8 @@ int main(void) {
     SetTargetFPS(60);
 
     // Game Setup
-    ground.rect = Rectangle{0, 450 - 100, 800, 200};
-    ground.collisionEnabled = true;
-    ground.tint = YELH;
+    ground = (Rectangle){0, 400, 800, 100};
+    player = (Rectangle){100, 150, 40, 40};
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -54,13 +44,23 @@ int main(void) {
     return 0;
 }
 
-void updateGame(float _dt) {
+void updateGame(float dt) {
     switch (currentLevel) {
-    case menu:
+    case MENU:
         break;
-    case game:
+    case GAME:
+        // Player Input
+        if (IsKeyPressed(KEY_SPACE)) {
+            player.y -= 75;
+        }
+        // Player Gravity
+        if (!CheckCollisionRecs(player, ground)) {
+            player.y += 150 * dt;
+        } else {
+            currentLevel = END;
+        }
         break;
-    case end:
+    case END:
         break;
     }
 }
@@ -70,18 +70,21 @@ void drawGame() {
     ClearBackground(PURK);
 
     switch (currentLevel) {
-    case menu:
+    case MENU:
         DrawText("This is the main menu", 0, 200, 12, YELH);
         break;
-    case game:
+    case GAME:
+        // Draw Player
+        DrawRectangleRec(player, YELH);
+
         // Draw Ground
-        DrawRectangleRec(ground.rect, ground.tint);
+        DrawRectangleRec(ground, YELH);
         break;
-    case end:
-        DrawText("This is the end screen", 0, 200, 12, YELH);
+    case END:
+        DrawText("This is the end screen", 0, 200, 24, YELH);
         break;
     default:
-        DrawText("There is an issue with level management", 0, 200, 12, YELH);
+        DrawText("There is an issue with level management", 0, 200, 24, YELH);
         break;
     }
 
