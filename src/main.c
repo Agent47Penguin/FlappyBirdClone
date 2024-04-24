@@ -53,7 +53,7 @@ int main(void) {
     for (int i = 0; i < MAX_OBSTACLE; i++) {
         int topHeight = (rand() % (maxHeight - minHeight + 1)) + minHeight;
         obstacles[i][0] = (Rectangle){startX, 0, 60, topHeight};
-        obstacles[i][1] = (Rectangle){startX, topHeight + player.height * 3, 60, 450};
+        obstacles[i][1] = (Rectangle){startX, topHeight + player.height * 3 + 20, 60, 450};
         startX += xIncrement;
     }
 
@@ -121,8 +121,8 @@ void updateGame(float dt) {
         for (int i = 0; i < MAX_OBSTACLE; i++) {
             for (int j = 0; j < OBSTACLE_PIECES; j++) {
                 obstacles[i][j].x -= obstacleSpeed * dt;
-                if (obstacles[i][j].x < 0) {
-                    int lastObstacle = i + MAX_OBSTACLE;
+                if (obstacles[i][j].x < 0 - obstacles[i][j].width) {
+                    obstacles[i][j].x = SCREEN_WIDTH + xIncrement / 2;
                 }
             }
         }
