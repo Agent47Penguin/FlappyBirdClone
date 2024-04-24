@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 450;
@@ -14,7 +16,8 @@ enum Level {
     GAME,
     END
 };
-enum Level currentLevel = MENU;
+// Starting Level
+enum Level currentLevel = GAME;
 
 Vector2 cursorPosition = {340, 200};
 bool exitPressed = false;
@@ -22,8 +25,12 @@ bool exitPressed = false;
 int frameCount = 0;
 int score = 0;
 Rectangle ground;
-Rectangle baseObstacle;
 Rectangle player;
+
+#define MAX_OBSTACLE 4
+#define OBSTACLE_PIECES 2
+Rectangle obstacles[MAX_OBSTACLE][OBSTACLE_PIECES];
+int xIncrement = 240;
 
 void updateGame(float);
 void drawGame();
@@ -37,6 +44,18 @@ int main(void) {
     // Game Setup
     ground = (Rectangle){0, 400, 800, 100};
     player = (Rectangle){100, 150, 40, 40};
+
+    srand(time(NULL));
+    int minHeight = 50;
+    int maxHeight = 200;
+    int startX = 600;
+
+    for (int i = 0; i < MAX_OBSTACLE; i++) {
+        int topHeight = (rand() % (maxHeight - minHeight + 1)) + minHeight;
+        obstacles[i][0] = (Rectangle){startX, 0, 60, topHeight};
+        obstacles[i][1] = (Rectangle){startX, topHeight + player.height * 3, 60, 450};
+        startX += xIncrement;
+    }
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -81,18 +100,40 @@ void updateGame(float dt) {
         break;
     case GAME:
         // Player Input
+        int jumpHeight = 50;
         if (IsKeyPressed(KEY_SPACE)) {
-            if (player.y > 76) {
-                player.y -= 75;
+            if (player.y > jumpHeight + 1) {
+                player.y -= jumpHeight;
             } else {
                 player.y = 0;
             }
         }
         // Player Gravity
         if (!CheckCollisionRecs(player, ground)) {
-            player.y += 150 * dt;
+            player.y += 125 * dt;
         } else {
             currentLevel = END;
+        }
+
+        // Move Obstacles
+        int obstacleSpeed = 150;
+
+        for (int i = 0; i < MAX_OBSTACLE; i++) {
+            for (int j = 0; j < OBSTACLE_PIECES; j++) {
+                obstacles[i][j].x -= obstacleSpeed * dt;
+                if (obstacles[i][j].x < 0) {
+                    int lastObstacle = i + MAX_OBSTACLE;
+                }
+            }
+        }
+
+        // Obstacle Collision
+        for (int i = 0; i < MAX_OBSTACLE; i++) {
+            for (int j = 0; j < OBSTACLE_PIECES; j++) {
+                if (CheckCollisionRecs(player, obstacles[i][j])) {
+                    currentLevel = END;
+                }
+            }
         }
 
         // Update Timer
@@ -130,6 +171,13 @@ void drawGame() {
         DrawText(">", cursorPosition.x, cursorPosition.y, fontSize, YELH);
         break;
     case GAME:
+        // Draw Obstacles
+        for (int i = 0; i < MAX_OBSTACLE; i++) {
+            for (int j = 0; j < OBSTACLE_PIECES; j++) {
+                DrawRectangleRec(obstacles[i][j], YELH);
+            }
+        }
+
         // Draw Player
         DrawRectangleRec(player, YELH);
 
