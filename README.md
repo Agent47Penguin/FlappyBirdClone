@@ -14,6 +14,9 @@ I've decided to take on the [20 Games Challenge](https://20_games_challenge.gitl
   - Collision
   - *Score*
   - *Endless Obstacles*
+- End Screen
+  - *Final Score*
+  - *Restart Game Prompt*
 
 ## Future Features
 - May port to CPP for sanity and maintainability reasons
@@ -22,8 +25,8 @@ I've decided to take on the [20 Games Challenge](https://20_games_challenge.gitl
   - ~~Score~~
   - ~~Time (?)~~
 - End Screen
-  - Final Score
-  - Restart Game Button
+  - ~~Final Score~~
+  - ~~Restart Game Button~~
   - Track Highscore in .txt file
 - The hope at the end is to use Raylib's WASM to make the game browser-friendly
 
