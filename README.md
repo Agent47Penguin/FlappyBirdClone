@@ -14,6 +14,7 @@ I've decided to take on the [20 Games Challenge](https://20_games_challenge.gitl
   - Collision
 
 ## Future Features
+- May port to CPP for sanity and maintainability reasons
 - Main Game
   - Obstacles
   - Score
