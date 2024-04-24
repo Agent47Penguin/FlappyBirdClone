@@ -13,13 +13,15 @@ enum Level {
     GAME,
     END
 };
-enum Level currentLevel = GAME;
+enum Level currentLevel = MENU;
+
+Vector2 cursorPosition = {340, 200};
+bool exitPressed = false;
 
 Rectangle ground;
 Rectangle baseObstacle;
 Rectangle player;
 
-void loadAssets();
 void updateGame(float);
 void drawGame();
 
@@ -37,6 +39,10 @@ int main(void) {
         float dt = GetFrameTime();
         updateGame(dt);
         drawGame();
+
+        if (exitPressed) {
+            break;
+        }
     }
 
     CloseWindow();
@@ -47,6 +53,28 @@ int main(void) {
 void updateGame(float dt) {
     switch (currentLevel) {
     case MENU:
+        int x = 340;
+        int y = 200;
+
+        // Handle Navigation
+        if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP)) {
+            if (cursorPosition.y == y) {
+                cursorPosition.x = 350;
+                cursorPosition.y = 250;
+            } else {
+                cursorPosition.x = x;
+                cursorPosition.y = y;
+            }
+        }
+
+        // Handle Interaction
+        if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) {
+            if (cursorPosition.y == y) {
+                currentLevel = GAME;
+            } else {
+                exitPressed = true;
+            }
+        }
         break;
     case GAME:
         // Player Input
@@ -71,7 +99,21 @@ void drawGame() {
 
     switch (currentLevel) {
     case MENU:
-        DrawText("This is the main menu", 0, 200, 12, YELH);
+        // Draw Options
+        int midScreen = SCREEN_WIDTH / 2;
+        int fontSize = 24;
+
+        int center = MeasureText("flappy bird clone", fontSize) / 2;
+        DrawText("flappy bird clone", midScreen - center, 100, fontSize, YELH);
+
+        center = MeasureText("START", fontSize) / 2;
+        DrawText("START", midScreen - center, 200, fontSize, YELH);
+
+        center = MeasureText("EXIT", fontSize) / 2;
+        DrawText("EXIT", midScreen - center, 250, fontSize, YELH);
+
+        // Draw Cursor
+        DrawText(">", cursorPosition.x, cursorPosition.y, fontSize, YELH);
         break;
     case GAME:
         // Draw Player
