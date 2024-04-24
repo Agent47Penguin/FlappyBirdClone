@@ -17,7 +17,7 @@ enum Level {
     END
 };
 // Starting Level
-enum Level currentLevel = GAME;
+enum Level currentLevel = MENU;
 
 Vector2 cursorPosition = {340, 200};
 bool exitPressed = false;
@@ -144,6 +144,9 @@ void updateGame(float dt) {
         }
         break;
     case END:
+        if (IsKeyPressed(KEY_SPACE)) {
+            currentLevel = GAME;
+        }
         break;
     }
 }
@@ -152,12 +155,11 @@ void drawGame() {
     BeginDrawing();
     ClearBackground(PURK);
 
+    int midScreen = SCREEN_WIDTH / 2;
+    int fontSize = 24;
+
     switch (currentLevel) {
     case MENU:
-        // Draw Options
-        int midScreen = SCREEN_WIDTH / 2;
-        int fontSize = 24;
-
         int center = MeasureText("flappy bird clone", fontSize) / 2;
         DrawText("flappy bird clone", midScreen - center, 100, fontSize, YELH);
 
@@ -186,15 +188,34 @@ void drawGame() {
 
         // Draw Score
         DrawRectangle(300, 0, 200, 50, YELH);
-        DrawText("Score: ", 325, 10, 24, PURK);
 
-        // Draw Score
         char formattedScore[20];
-        sprintf(formattedScore, "%d", score);
-        DrawText(formattedScore, 410, 10, 24, PURK);
+        sprintf(formattedScore, "SCORE: "
+                                "%d",
+                score);
+        center = MeasureText(formattedScore, fontSize) / 2;
+        DrawText(formattedScore, 400 - center, 10, 24, PURK);
         break;
     case END:
-        DrawText("This is the end screen", 0, 200, 24, YELH);
+        // Draw Options
+        midScreen = SCREEN_WIDTH / 2;
+        fontSize = 24;
+
+        center = MeasureText("flappy bird clone", fontSize) / 2;
+        DrawText("flappy bird clone", midScreen - center, 25, fontSize, YELH);
+
+        center = MeasureText("HIGHSCORE: 0", fontSize * 2) / 2;
+        DrawText("HIGHSCORE: 0", midScreen - center, 75, fontSize * 2, YELH);
+
+        sprintf(formattedScore, "SCORE: "
+                                "%d",
+                score);
+        center = MeasureText(formattedScore, fontSize * 2) / 2;
+        DrawText(formattedScore, midScreen - center, 125, fontSize * 2, YELH);
+
+        center = MeasureText("PRESS SPACE TO REPLAY", fontSize) / 2;
+        DrawText("PRESS SPACE TO REPLAY", midScreen - center, 350, fontSize, YELH);
+
         break;
     default:
         DrawText("There is an issue with level management", 0, 200, 24, YELH);
